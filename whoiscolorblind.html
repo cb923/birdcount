@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>谁是色盲 - 宇宙版</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            font-family: 'Orbitron', 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        /* 宇宙背景 */
+        .universe {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle 2s ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .nebula {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: nebulaFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes nebulaFloat {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+        }
+
+        .galaxy {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(ellipse at center, transparent 0%, transparent 30%, rgba(100, 50, 150, 0.1) 60%, transparent 100%);
+            animation: galaxyRotate 30s linear infinite;
+        }
+
+        @keyframes galaxyRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 内容容器 */
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 3rem;
+            margin-bottom: 8px;
+            text-shadow: 
+                0 0 10px #00d4ff,
+                0 0 20px #00d4ff,
+                0 0 40px #00d4ff;
+            letter-spacing: 8px;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, 0 0 40px #00d4ff; }
+            50% { text-shadow: 0 0 20px #ff00ff, 0 0 40px #ff00ff, 0 0 60px #ff00ff; }
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+        }
+
+        .designer {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.8rem;
+            margin-bottom: 25px;
+        }
+
+        /* 开始界面 */
+        #startScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #startScreen.hidden {
+            display: none;
+        }
+
+        .rules {
+            background: linear-gradient(135deg, rgba(0,50,100,0.5), rgba(50,0,100,0.5));
+            border: 1px solid rgba(0,212,255,0.3);
+            border-radius: 20px;
+            padding: 35px 45px;
+            margin-bottom: 30px;
+            text-align: left;
+            color: #fff;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0,212,255,0.2);
+        }
+
+        .rules h2 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #00d4ff;
+            text-shadow: 0 0 10px #00d4ff;
+        }
+
+        .rules li {
+            margin-bottom: 14px;
+            color: rgba(255,255,255,0.85);
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #00d4ff, #ff00ff);
+            color: #fff;
+            border: none;
+            padding: 16px 55px;
+            font-size: 1.1rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Orbitron', inherit;
+            font-weight: 700;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 20px rgba(0,212,255,0.5);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 40px rgba(0,212,255,0.8), 0 0 60px rgba(255,0,255,0.4);
+        }
+
+        /* 游戏界面 */
+        #gameScreen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #gameScreen.active {
+            display: flex;
+        }
+
+        .game-info {
+            display: flex;
+            gap: 50px;
+            margin-bottom: 25px;
+            color: #fff;
+            font-size: 1.3rem;
+            background: rgba(0,0,0,0.3);
+            padding: 12px 30px;
+            border-radius: 30px;
+            border: 1px solid rgba(0,212,255,0.3);
+        }
+
+        .grid {
+            display: grid;
+            gap: 6px;
+            background: rgba(0,0,0,0.4);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        .block {
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .block::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .block:hover::after {
+            opacity: 1;
+        }
+
+        .block:hover {
+            transform: scale(1.08);
+            z-index: 10;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+
+        .block .marker {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 10px #000, 0 2px 4px rgba(0,0,0,0.8);
+            z-index: 5;
+        }
+
+        /* 弹窗 */
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        #modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #0a0a1a, #1a0a2a);
+            padding: 45px 55px;
+            border-radius: 25px;
+            text-align: center;
+            color: #fff;
+            border: 1px solid rgba(0,212,255,0.3);
+            box-shadow: 0 0 50px rgba(0,212,255,0.3);
+            animation: modalPop 0.4s ease;
+        }
+
+        @keyframes modalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .modal-content p {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .modal-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+                min-height: 100vh;
+                min-height: 100dvh;
+            }
+            h1 { 
+                font-size: 1.6rem; 
+                letter-spacing: 3px; 
+                margin-bottom: 6px;
+            }
+            .subtitle {
+                font-size: 0.7rem;
+                letter-spacing: 2px;
+                margin-bottom: 6px;
+            }
+            .designer {
+                font-size: 0.65rem;
+                margin-bottom: 15px;
+            }
+            .game-info { 
+                gap: 20px; 
+                font-size: 0.85rem;
+                padding: 8px 20px;
+                margin-bottom: 15px;
+            }
+            .rules { 
+                padding: 18px 22px; 
+                margin-bottom: 20px;
+                border-radius: 15px;
+            }
+            .rules h2 {
+                font-size: 1.1rem;
+                margin-bottom: 12px;
+            }
+            .rules li {
+                font-size: 0.8rem;
+                margin-bottom: 8px;
+            }
+            .btn {
+                padding: 14px 40px;
+                font-size: 1rem;
+                border-radius: 25px;
+            }
+            .grid {
+                padding: 12px;
+                gap: 4px;
+                border-radius: 10px;
+            }
+            .block {
+                border-radius: 4px;
+                -webkit-tap-highlight-color: transparent;
+            }
+            .block .marker {
+                font-size: 2rem;
+            }
+            .modal-content {
+                padding: 30px 25px;
+                border-radius: 20px;
+                margin: 20px;
+            }
+            .modal-content h2 {
+                font-size: 1.5rem;
+            }
+            .modal-content p {
+                font-size: 1rem;
+            }
+            .modal-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            h1 { font-size: 1.3rem; }
+            .game-info { 
+                gap: 15px; 
+                font-size: 0.75rem;
+            }
+            .block .marker {
+                font-size: 1.6rem;
+            }
+        }
+
+        /* 音乐控制按钮 */
+        #musicBtn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 50;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.2);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            color: #00d4ff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        #musicBtn:hover {
+            background: rgba(0, 212, 255, 0.4);
+            transform: scale(1.1);
+        }
+
+        #musicBtn.playing {
+            animation: musicPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes musicPulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 212, 255, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.8); }
+        }
+
+        /* 触摸反馈 */
+        .block:active {
+            transform: scale(0.95);
+        }
+
+        /* 撒花动画容器 */
+        #confettiContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+            animation: confettiFall 3s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px) rotate(0deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg) scale(0.5);
+            }
+        }
+
+        /* 星星烟花效果 */
+        .firework {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: firework 1.5s ease-out forwards;
+        }
+
+        @keyframes firework {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 宇宙背景 -->
+    <div class="universe" id="universe"></div>
+    
+    <!-- 音乐控制 -->
+    <button id="musicBtn" onclick="toggleMusic()">🎵</button>
+    
+    <!-- 背景音乐 -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container">
+        <!-- 开始界面 -->
+        <div id="startScreen">
+            <h1>谁是色盲</h1>
+            <p class="subtitle">COSMIC COLOR CHALLENGE</p>
+            
+            <div class="rules">
+                <h2>游戏说明</h2>
+                <ul>
+                    <li>游戏共有 <strong>8 关</strong>，每关色块数量递增</li>
+                    <li>每关有 <strong>1 块</strong>颜色不同的色块</li>
+                    <li>找出颜色不同的色块即可过关</li>
+                    <li>随着关卡提升，色差会越来越小</li>
+                    <li>找错则游戏结束</li>
+                </ul>
+            </div>
+            
+            <p class="designer">游戏设计者：陈星泽</p>
+            <button class="btn" onclick="startGame()">开始游戏</button>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div id="gameScreen">
+            <h1>谁是色盲</h1>
+            <p class="subtitle">COSMIC COLOR CHALLENGE</p>
+            <p class="designer">游戏设计者：陈星泽</p>
+            
+            <div class="game-info">
+                <span>关卡 <strong id="level">1</strong>/8</span>
+                <span>色块 <strong id="blocks">9</strong></span>
+            </div>
+
+            <div class="grid" id="grid"></div>
+        </div>
+    </div>
+
+    <!-- 弹窗 -->
+    <div id="modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon"></div>
+            <h2 id="modalTitle"></h2>
+            <p id="modalMessage"></p>
+            <button class="btn" onclick="restartGame()">再来一次</button>
+        </div>
+    </div>
+
+    <!-- 撒花动画容器 -->
+    <div id="confettiContainer"></div>
+
+    <script>
+        // 创建宇宙背景
+        function createUniverse() {
+            var universe = document.getElementById('universe');
+            universe.innerHTML = '';
+            
+            // 创建星星
+            for (var i = 0; i < 150; i++) {
+                var star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = (Math.random() * 2 + 1) + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                universe.appendChild(star);
+            }
+            
+            // 创建星云
+            var nebulaColors = ['#4a00e0', '#8e2de2', '#00d4ff', '#ff00ff', '#ff0080'];
+            for (var j = 0; j < 5; j++) {
+                var nebula = document.createElement('div');
+                nebula.className = 'nebula';
+                nebula.style.left = Math.random() * 80 + '%';
+                nebula.style.top = Math.random() * 80 + '%';
+                nebula.style.width = (300 + Math.random() * 200) + 'px';
+                nebula.style.height = nebula.style.width;
+                nebula.style.background = 'radial-gradient(circle, ' + nebulaColors[j] + ' 0%, transparent 70%)';
+                nebula.style.animationDelay = j * 3 + 's';
+                universe.appendChild(nebula);
+            }
+            
+            // 创建星系
+            for (var k = 0; k < 3; k++) {
+                var galaxy = document.createElement('div');
+                galaxy.className = 'galaxy';
+                galaxy.style.left = (10 + k * 35) + '%';
+                galaxy.style.top = (20 + k * 25) + '%';
+                universe.appendChild(galaxy);
+            }
+        }
+
+        // 8个不同的主色调
+        var colors = [
+            {r:46, g:204, b:113},   // 1: 绿色
+            {r:231, g:76, b:60},   // 2: 红色
+            {r:52, g:152, b:219},  // 3: 蓝色
+            {r:155, g:89, b:182},  // 4: 紫色
+            {r:241, g:196, b:15},  // 5: 黄色
+            {r:0, g:255, b:255},   // 6: 青色
+            {r:255, g:165, b:0},   // 7: 橙色
+            {r:255, g:20, b:147}   // 8: 粉红色
+        ];
+
+        // 每关的色块数量
+        var gridSizes = [3, 4, 5, 6, 7, 8, 9, 10];
+        
+        // 每关的色差（从70递减到12）
+        var difficulties = [70, 64, 58, 52, 46, 40, 26, 12];
+
+        var currentLevel = 1;
+        var targetIndex = 0;
+        var gameLocked = false;
+
+        // 开始游戏
+        function startGame() {
+            playSfx('click');
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('active');
+            initLevel(1);
+        }
+
+        // 初始化关卡
+        function initLevel(level) {
+            currentLevel = level;
+            gameLocked = false;
+            
+            document.getElementById('level').textContent = level;
+            document.getElementById('blocks').textContent = gridSizes[level-1] * gridSizes[level-1];
+            
+            var size = gridSizes[level-1];
+            var total = size * size;
+            targetIndex = Math.floor(Math.random() * total);
+            
+            var grid = document.getElementById('grid');
+            grid.style.gridTemplateColumns = 'repeat(' + size + ', 1fr)';
+            grid.innerHTML = '';
+            
+            var mainColor = colors[level-1];
+            var diff = difficulties[level-1];
+            
+            // 计算色块大小 - 响应式
+            var screenWidth = window.innerWidth || document.documentElement.clientWidth;
+            var isMobile = screenWidth < 600;
+            
+            var blockSize;
+            if (isMobile) {
+                // 手机端：根据屏幕宽度计算
+                var gridMaxWidth = Math.min(screenWidth - 40, 350);
+                blockSize = Math.floor(gridMaxWidth / size) - 2;
+                if (blockSize > 50) blockSize = 50;
+                if (blockSize < 25) blockSize = 25;
+            } else {
+                // 桌面端
+                blockSize = 70 - (level - 1) * 5;
+                if (blockSize < 40) blockSize = 40;
+            }
+            
+            for (var i = 0; i < total; i++) {
+                var block = document.createElement('div');
+                block.className = 'block';
+                block.style.width = blockSize + 'px';
+                block.style.height = blockSize + 'px';
+                
+                if (i === targetIndex) {
+                    // 目标块 - RGB三通道同步变化
+                    var newColor = makeDiffColor(mainColor, diff);
+                    block.style.background = 'rgb(' + newColor.r + ',' + newColor.g + ',' + newColor.b + ')';
+                    block.onclick = function() { correctClick(this); };
+                } else {
+                    // 普通块
+                    block.style.background = 'rgb(' + mainColor.r + ',' + mainColor.g + ',' + mainColor.b + ')';
+                    block.onclick = function() { wrongClick(this); };
+                }
+                
+                grid.appendChild(block);
+            }
+        }
+
+        // 生成不同的颜色 - RGB三通道同步变化
+        function makeDiffColor(color, diff) {
+            // 固定减少，确保所有通道同步变化
+            var r = Math.max(0, color.r - diff);
+            var g = Math.max(0, color.g - diff);
+            var b = Math.max(0, color.b - diff);
+            
+            return {r: r, g: g, b: b};
+        }
+
+        // 正确点击
+        function correctClick(block) {
+            if (gameLocked) return;
+            gameLocked = true;
+            
+            // 播放过关音效
+            playSfx('correct');
+            
+            var marker = document.createElement('span');
+            marker.className = 'marker';
+            marker.textContent = '★';
+            marker.style.color = '#FFD700';
+            block.appendChild(marker);
+            
+            setTimeout(function() {
+                if (currentLevel >= 8) {
+                    // 播放通关音效
+                    playSfx('victory');
+                    // 播放撒花动画
+                    createConfetti();
+                    showModal('🎉', '恭喜通关！', '恭喜你，你不是色盲！', '#00d4ff');
+                } else {
+                    initLevel(currentLevel + 1);
+                }
+            }, 800);
+        }
+
+        // 错误点击
+        function wrongClick(block) {
+            if (gameLocked) return;
+            gameLocked = true;
+            
+            // 播放错误音效
+            playSfx('wrong');
+            
+            var marker = document.createElement('span');
+            marker.className = 'marker';
+            marker.textContent = '✕';
+            marker.style.color = '#ff4444';
+            block.appendChild(marker);
+            
+            // 显示正确答案
+            var blocks = document.getElementsByClassName('block');
+            var correctMarker = document.createElement('span');
+            correctMarker.className = 'marker';
+            correctMarker.textContent = '★';
+            correctMarker.style.color = '#FFD700';
+            blocks[targetIndex].appendChild(correctMarker);
+            
+            setTimeout(function() {
+                var level = 9 - currentLevel;
+                showModal('😔', '游戏结束', '你的色盲等级为' + level + '级', '#ff4444');
+            }, 800);
+        }
+
+        // 显示弹窗
+        function showModal(icon, title, message, color) {
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalTitle').style.color = color || '#fff';
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        // 重新开始
+        function restartGame() {
+            playSfx('click');
+            document.getElementById('modal').classList.remove('active');
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('startScreen').classList.remove('hidden');
+            // 清除撒花效果
+            document.getElementById('confettiContainer').innerHTML = '';
+        }
+
+        // 撒花动画效果 - 延长增强版
+        function createConfetti() {
+            var container = document.getElementById('confettiContainer');
+            container.innerHTML = '';
+            
+            var colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#FF7675', '#00FF7F', '#FF69B4'];
+            var shapes = ['■', '●', '▲', '★', '♦', '♠', '♣', '♥'];
+            
+            // 创建80个撒花元素（更多更久）
+            for (var i = 0; i < 80; i++) {
+                setTimeout(function() {
+                    var confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    
+                    // 随机颜色和形状
+                    var color = colors[Math.floor(Math.random() * colors.length)];
+                    var shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '-20px';
+                    confetti.style.color = color;
+                    confetti.style.textShadow = '0 0 10px ' + color + ', 0 0 20px ' + color;
+                    confetti.style.fontSize = (Math.random() * 18 + 12) + 'px';
+                    confetti.style.animationDuration = (Math.random() * 2 + 3.5) + 's';
+                    confetti.textContent = shape;
+                    
+                    container.appendChild(confetti);
+                    
+                    // 动画结束后移除
+                    setTimeout(function() {
+                        confetti.remove();
+                    }, 5500);
+                }, i * 50);
+            }
+            
+            // 创建更多烟花效果
+            for (var j = 0; j < 15; j++) {
+                setTimeout(function() {
+                    var firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = (Math.random() * 70 + 15) + '%';
+                    firework.style.top = (Math.random() * 40 + 15) + '%';
+                    firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    firework.style.boxShadow = '0 0 30px ' + firework.style.background + ', 0 0 60px ' + firework.style.background;
+                    firework.style.animationDuration = (Math.random() * 0.5 + 1.5) + 's';
+                    
+                    container.appendChild(firework);
+                    
+                    setTimeout(function() {
+                        firework.remove();
+                    }, 2500);
+                }, j * 150);
+            }
+        }
+
+        // 初始化宇宙背景
+        createUniverse();
+        
+        // 音乐控制
+        var musicPlaying = false;
+        var bgMusic = document.getElementById('bgMusic');
+        var musicBtn = document.getElementById('musicBtn');
+        
+        // 设置音量
+        bgMusic.volume = 0.3;
+        
+        // Web Audio API - 生成音效
+        var audioCtx = null;
+        
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+        
+        // 播放音效函数 - 使用Web Audio API生成
+        function playSfx(type) {
+            try {
+                initAudioContext();
+                var oscillator = audioCtx.createOscillator();
+                var gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                if (type === 'correct') {
+                    // 过关音效 - 上升音调
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    oscillator.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.1); // G5
+                    oscillator.frequency.exponentialRampToValueAtTime(1046.50, audioCtx.currentTime + 0.2); // C6
+                    gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'wrong') {
+                    // 失败音效 - 下降音调
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(200, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.3);
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'click') {
+                    // 按键音效 - 清脆的点击声
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.05);
+                    gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.1);
+                } else if (type === 'victory') {
+                    // 通关音效 - 超长版拍手撒花庆祝
+                    var startTime = audioCtx.currentTime;
+                    
+                    // 拍手序列 - 6次拍手，更有节奏感
+                    var clapTimes = [0, 0.15, 0.3, 0.5, 0.7, 1.0];
+                    var clapFreqs = [150, 180, 160, 200, 180, 220];
+                    var clapDurs = [0.08, 0.08, 0.1, 0.1, 0.12, 0.15];
+                    
+                    for (var c = 0; c < clapTimes.length; c++) {
+                        (function(idx) {
+                            var clap = audioCtx.createOscillator();
+                            var clapGain = audioCtx.createGain();
+                            clap.type = 'square';
+                            clap.frequency.setValueAtTime(clapFreqs[idx], startTime + clapTimes[idx]);
+                            clap.frequency.exponentialRampToValueAtTime(40, startTime + clapTimes[idx] + clapDurs[idx]);
+                            clapGain.gain.setValueAtTime(0.25, startTime + clapTimes[idx]);
+                            clapGain.gain.exponentialRampToValueAtTime(0.01, startTime + clapTimes[idx] + clapDurs[idx]);
+                            clap.connect(clapGain);
+                            clapGain.connect(audioCtx.destination);
+                            clap.start(startTime + clapTimes[idx]);
+                            clap.stop(startTime + clapTimes[idx] + clapDurs[idx]);
+                        })(c);
+                    }
+                    
+                    // 第一段上升音阶 - C5 → E5 → G5
+                    var notes1 = [523.25, 659.25, 783.99];
+                    for (var n1 = 0; n1 < notes1.length; n1++) {
+                        (function(note, delay) {
+                            var osc = audioCtx.createOscillator();
+                            var gain = audioCtx.createGain();
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(note, startTime + 0.1 + delay);
+                            gain.gain.setValueAtTime(0.15, startTime + 0.1 + delay);
+                            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 0.5 + delay);
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.start(startTime + 0.1 + delay);
+                            osc.stop(startTime + 0.5 + delay);
+                        })(notes1[n1], n1 * 0.15);
+                    }
+                    
+                    // 第二段上升 - 高音绽放
+                    var notes2 = [1046.50, 1318.51, 1567.98, 2093.00];
+                    for (var n2 = 0; n2 < notes2.length; n2++) {
+                        (function(note, delay) {
+                            var osc = audioCtx.createOscillator();
+                            var gain = audioCtx.createGain();
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(note, startTime + 0.8 + delay * 0.2);
+                            gain.gain.setValueAtTime(0.12, startTime + 0.8 + delay * 0.2);
+                            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 1.8 + delay * 0.2);
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.start(startTime + 0.8 + delay * 0.2);
+                            osc.stop(startTime + 1.8 + delay * 0.2);
+                        })(notes2[n2], n2);
+                    }
+                    
+                    // 和弦音效 - 最后的辉煌
+                    var chordNotes = [523.25, 659.25, 783.99, 1046.50];
+                    for (var ch = 0; ch < chordNotes.length; ch++) {
+                        (function(note) {
+                            var osc = audioCtx.createOscillator();
+                            var gain = audioCtx.createGain();
+                            osc.type = 'triangle';
+                            osc.frequency.setValueAtTime(note, startTime + 1.5);
+                            gain.gain.setValueAtTime(0.08, startTime + 1.5);
+                            gain.gain.exponentialRampToValueAtTime(0.01, startTime + 2.5);
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.start(startTime + 1.5);
+                            osc.stop(startTime + 2.5);
+                        })(chordNotes[ch]);
+                    }
+                    
+                    // 尾声 - 渐弱的高音
+                    var endNotes = [2093.00, 1567.98, 1318.51];
+                    for (var en = 0; en < endNotes.length; en++) {
+                        (function(note, delay) {
+                            var osc = audioCtx.createOscillator();
+                            var gain = audioCtx.createGain();
+                            osc.type = 'sine';
+                            osc.frequency.setValueAtTime(note, startTime + 2.0 + delay * 0.15);
+                            gain.gain.setValueAtTime(0.06, startTime + 2.0 + delay * 0.15);
+                            gain.gain.exponentialRampToValueAtTime(0.001, startTime + 3.0 + delay * 0.15);
+                            osc.connect(gain);
+                            gain.connect(audioCtx.destination);
+                            osc.start(startTime + 2.0 + delay * 0.15);
+                            osc.stop(startTime + 3.0 + delay * 0.15);
+                        })(endNotes[en], en);
+                    }
+                }
+            } catch (e) {
+                console.log('音效播放失败:', e);
+            }
+        }
+        
+        // 尝试自动播放背景音乐
+        function tryAutoPlayMusic() {
+            var playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    musicPlaying = true;
+                    musicBtn.textContent = '🔊';
+                    musicBtn.classList.add('playing');
+                }).catch(function(error) {
+                    // 自动播放被阻止，保持静音状态
+                    console.log('自动播放被阻止，等待用户交互');
+                    musicPlaying = false;
+                    musicBtn.textContent = '🎵';
+                });
+            }
+        }
+        
+        // 兼容微信浏览器和其他移动端浏览器
+        function toggleMusic() {
+            // 初始化AudioContext以确保音效可以播放
+            initAudioContext();
+            
+            // 解决iOS/微信音频播放限制
+            document.addEventListener('touchstart', function once() {
+                bgMusic.play().then(function() {
+                    bgMusic.pause();
+                }).catch(function(e) {
+                    console.log('Audio init:', e);
+                });
+                document.removeEventListener('touchstart', once);
+            }, {once: true});
+            
+            if (musicPlaying) {
+                bgMusic.pause();
+                musicBtn.textContent = '🎵';
+                musicBtn.classList.remove('playing');
+                musicPlaying = false;
+            } else {
+                // 尝试播放
+                var playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(function() {
+                        musicBtn.textContent = '🔊';
+                        musicBtn.classList.add('playing');
+                        musicPlaying = true;
+                    }).catch(function(error) {
+                        // 自动播放被阻止，需要用户交互
+                        console.log('播放被阻止:', error);
+                        alert('请点击屏幕后再次尝试播放音乐');
+                    });
+                }
+            }
+        }
+        
+        // 页面加载后尝试自动播放音乐
+        window.addEventListener('load', function() {
+            initAudioContext();
+            tryAutoPlayMusic();
+        });
+        
+        // 用户首次交互后尝试播放
+        document.addEventListener('click', function initAudio() {
+            initAudioContext();
+            if (!musicPlaying) {
+                tryAutoPlayMusic();
+            }
+            document.removeEventListener('click', initAudio);
+        }, {once: true});
+        
+        // 页面可见性变化时暂停/恢复音乐
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && musicPlaying) {
+                bgMusic.pause();
+            } else if (!document.hidden && musicPlaying) {
+                bgMusic.play().catch(function() {});
+            }
+        });
+        
+        // 微信浏览器兼容 - 阻止下拉刷新和橡皮筋效果
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.grid') || e.target.closest('.modal-content')) {
+                e.preventDefault();
+            }
+        }, {passive: false});
+        
+        // 禁止微信浏览器下拉刷新
+        document.body.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, {passive: false});
+        
+        var lastTouchY = 0;
+        document.body.addEventListener('touchmove', function(e) {
+            var touchY = e.touches[0].clientY;
+            var touchYDelta = touchY - lastTouchY;
+            lastTouchY = touchY;
+            
+            // 如果在页面顶部向下拉，或者在底部向上拉，阻止默认行为
+            if ((window.scrollY === 0 && touchYDelta > 0) ||
+                ((window.innerHeight + window.scrollY) >= document.body.scrollHeight && touchYDelta < 0)) {
+                // e.preventDefault(); // 注释掉以允许正常滚动
+            }
+        }, {passive: true});
+        
+        // 阻止双击缩放
+        var lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            var now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // 点击穿透问题修复
+        document.addEventListener('click', function(e) {
+            // 确保点击事件正常工作
+        }, true);
+    </script>
+</body>
+</html>
